@@ -15,7 +15,7 @@ if meson.get_compiler('c').get_id() == 'clang'
     add_project_link_arguments('--target=arm-none-eabi', language : 'c')
 endif
 
-firmware_dir = get_option('libdir') / 'firmware/apple'
+install_dir = get_option('libdir') / get_option('firmwaredir') / 'apple'
 
 objcopy = find_program('llvm-objcopy')
 
@@ -45,7 +45,7 @@ foreach var : avd_variants
             input: e,
             command: [objcopy, '-O', 'binary',  '--strip-debug', '--pad-to=' + var['pad'], '@INPUT0@', '@OUTPUT0@'],
             install: true,
-            install_dir: firmware_dir
+            install_dir: install_dir
         )
     else
         custom_target(
@@ -53,7 +53,7 @@ foreach var : avd_variants
             input: e,
             command: [objcopy, '-O', 'binary',  '--strip-debug', '--pad-to=' + var['pad'], '@INPUT0@', '@OUTPUT0@'],
             install: true,
-            install_dir: firmware_dir
+            install_dir: install_dir
         )
     endif
 endforeach
