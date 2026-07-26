@@ -1,0 +1,1 @@
+option('firmwaredir', type : 'string', value : 'firmware', description : 'Firmware install path in $libdir')
