@@ -15,7 +15,7 @@ if meson.get_compiler('c').get_id() == 'clang'
     add_project_link_arguments('--target=arm-none-eabi', language : 'c')
 endif
 
-install_dir = get_option('libdir') / get_option('firmwaredir') / 'apple'
+install_dir = get_option('prefix') / 'lib' / get_option('firmwaredir') / 'apple'
 
 objcopy = find_program('llvm-objcopy')
 
