@@ -1,1 +1,1 @@
-option('firmwaredir', type : 'string', value : 'firmware', description : 'Firmware install path in $libdir')
+option('firmwaredir', type : 'string', value : 'firmware', description : 'Firmware install path in $prefix/lib')
