@@ -1,4 +1,10 @@
-project('avd-fw', 'c', default_options: ['c_std=c11'], meson_version: '>=1.4.0', version: '0.1')
+project('avd-fw', 'c',
+    default_options: ['c_std=c11'],
+    license: 'MIT',
+    license_files: 'LICENSE',
+    meson_version: '>=1.4.0',
+    version: '0.1',
+)
 
 # cross files are needed as those are the only way to set default compiler
 # and specify the host arch
