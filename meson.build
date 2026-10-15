@@ -25,7 +25,7 @@ install_dir = get_option('prefix') / 'lib' / get_option('firmwaredir') / 'apple'
 
 objcopy = find_program('llvm-objcopy')
 
-sources = files(['src/avd.c', 'src/irq.c', 'src/util.c'])
+sources = files(['src/avd.c', 'src/config.c', 'src/irq.c', 'src/util.c'])
 ld_scripts = files('avd-cm3.ld')
 
 avd_variants = [
@@ -36,6 +36,26 @@ avd_variants = [
     { 'name': 'avd-fw-v5-t0', 'version': '5', 'tier': '0', 'pad': '0x10000'},
     { 'name': 'avd-fw-v5-t1', 'version': '5', 'tier': '1', 'pad': '0x12000'},
 ]
+
+conf_data = configuration_data()
+
+_codecs = get_option('video-codecs')
+patent_codecs = ['h264', 'h265']
+free_codecs = ['av1', 'vp9']
+all_codecs = patent_codecs + free_codecs
+
+if _codecs.contains('all')
+  _codecs = all_codecs
+elif _codecs.contains('all_free')
+  _codecs += free_codecs
+endif
+
+foreach c : all_codecs
+    conf_data.set10('AVD_ENABLE_CODEC_' + c.to_upper(), _codecs.contains(c))
+endforeach
+
+configure_file(output : 'config.h',
+               configuration : conf_data)
 
 foreach var : avd_variants
     e = executable(var['name'] + '.elf',
