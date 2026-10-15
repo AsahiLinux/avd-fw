@@ -1,1 +1,18 @@
+# Copyright The Asahi Linux Contributors
+# SPDX-License-Identifier: MIT
+
 option('firmwaredir', type : 'string', value : 'firmware', description : 'Firmware install path in $prefix/lib')
+
+option(
+  'video-codecs',
+  type : 'array',
+  value : ['all_free'],
+  choices : [
+    'all', 'all_free',
+    'av1', 'h264', 'h265', 'vp9',
+  ],
+  description : 'List of codecs to build support for. ' +
+                'Distros might want to consult their legal department before ' +
+                'enabling these. Non-patent encumbered codecs will be ' +
+                'enabled by default with the all_free default value.'
+)
