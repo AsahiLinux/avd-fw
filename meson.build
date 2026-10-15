@@ -38,6 +38,8 @@ avd_variants = [
 ]
 
 conf_data = configuration_data()
+conf_data.set_quoted('AVD_FW_VERSION', meson.project_version())
+conf_data.set_quoted('AVD_FW_LICENSE', meson.project_license())
 
 _codecs = get_option('video-codecs')
 patent_codecs = ['h264', 'h265']
@@ -60,7 +62,10 @@ configure_file(output : 'config.h',
 foreach var : avd_variants
     e = executable(var['name'] + '.elf',
         sources,
-        c_args: ['-DAVD_VER=' + var['version'], '-DAVD_TIER=' + var['tier']],
+        c_args: ['-DAVD_VER=' + var['version'],
+                 '-DAVD_TIER=' + var['tier'],
+                 '-DAVD_TARGET="' + var['name'] + '"',
+                ],
         link_args: ['-T', ld_scripts[0].full_path()],
         link_depends: ld_scripts,
     )
