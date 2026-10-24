@@ -3,8 +3,11 @@ project('avd-fw', 'c',
     license: 'MIT',
     license_files: 'LICENSE',
     meson_version: '>=1.4.0',
-    version: '0.1',
+    version: run_command('version.sh', 'get-vcs', check: true).stdout().strip(),
 )
+
+# Provide a version for `meson dist` tarballs
+meson.add_dist_script('version.sh', 'set-dist', meson.project_version())
 
 # cross files are needed as those are the only way to set default compiler
 # and specify the host arch
