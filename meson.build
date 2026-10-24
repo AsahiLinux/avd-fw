@@ -35,7 +35,8 @@ foreach var : avd_variants
     e = executable(var['name'] + '.elf',
         sources,
         c_args: ['-DAVD_VER=' + var['version'], '-DAVD_TIER=' + var['tier']],
-        link_args: ['-T', ld_scripts[0].full_path()]
+        link_args: ['-T', ld_scripts[0].full_path()],
+        link_depends: ld_scripts,
     )
 
     if meson.version().version_compare('>=1.10.0') == true
