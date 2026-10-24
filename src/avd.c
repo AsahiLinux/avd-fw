@@ -2,6 +2,12 @@
 
 #include "avd.h"
 
+#include "irq.h"
+#include "util.h"
+
+#include "hw/reg/reg.h"
+#include "hw/tunables/tunables.h"
+
 extern void _start(void);
 
 __attribute__((section(".vectors"), used))

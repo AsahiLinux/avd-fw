@@ -1,4 +1,10 @@
-project('avd-fw', 'c', default_options: ['c_std=c11'], meson_version: '>=1.4.0', version: '0.1')
+project('avd-fw', 'c',
+    default_options: ['c_std=c11'],
+    license: 'MIT',
+    license_files: 'LICENSE',
+    meson_version: '>=1.4.0',
+    version: '0.1',
+)
 
 # cross files are needed as those are the only way to set default compiler
 # and specify the host arch
@@ -19,7 +25,7 @@ install_dir = get_option('prefix') / 'lib' / get_option('firmwaredir') / 'apple'
 
 objcopy = find_program('llvm-objcopy')
 
-sources = files(['src/avd.c', 'src/irq.c', 'src/util.c'])
+sources = files(['src/avd.c', 'src/config.c', 'src/irq.c', 'src/util.c'])
 ld_scripts = files('avd-cm3.ld')
 
 avd_variants = [
@@ -31,11 +37,37 @@ avd_variants = [
     { 'name': 'avd-fw-v5-t1', 'version': '5', 'tier': '1', 'pad': '0x12000'},
 ]
 
+conf_data = configuration_data()
+conf_data.set_quoted('AVD_FW_VERSION', meson.project_version())
+conf_data.set_quoted('AVD_FW_LICENSE', meson.project_license())
+
+_codecs = get_option('video-codecs')
+patent_codecs = ['h264', 'h265']
+free_codecs = ['av1', 'vp9']
+all_codecs = patent_codecs + free_codecs
+
+if _codecs.contains('all')
+  _codecs = all_codecs
+elif _codecs.contains('all_free')
+  _codecs += free_codecs
+endif
+
+foreach c : all_codecs
+    conf_data.set10('AVD_ENABLE_CODEC_' + c.to_upper(), _codecs.contains(c))
+endforeach
+
+configure_file(output : 'config.h',
+               configuration : conf_data)
+
 foreach var : avd_variants
     e = executable(var['name'] + '.elf',
         sources,
-        c_args: ['-DAVD_VER=' + var['version'], '-DAVD_TIER=' + var['tier']],
-        link_args: ['-T', ld_scripts[0].full_path()]
+        c_args: ['-DAVD_VER=' + var['version'],
+                 '-DAVD_TIER=' + var['tier'],
+                 '-DAVD_TARGET="' + var['name'] + '"',
+                ],
+        link_args: ['-T', ld_scripts[0].full_path()],
+        link_depends: ld_scripts,
     )
 
     if meson.version().version_compare('>=1.10.0') == true
