@@ -1,0 +1,41 @@
+name: dist-tarball
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ .github/workflows/dist-tarball.yml, meson.build ]
+
+jobs:
+  dist-tarball:
+    runs-on: ubuntu-26.04-arm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y meson
+          echo "/usr/lib/llvm-21/bin" >> $GITHUB_PATH
+
+      - name: meson setup
+        run: |
+          meson setup --cross-file=./llvm.ini build
+
+      - name: meson dist
+        run: |
+          meson dist -C build
+
+      - name: Query version
+        run: |
+          meson introspect --projectinfo build | jq -r '"VERSION=\(.["version"])"' >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v7
+        with:
+          archive: false
+          path: build/meson-dist/avd-fw-${{ env.VERSION }}.tar.xz
