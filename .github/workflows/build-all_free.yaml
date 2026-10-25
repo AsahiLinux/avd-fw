@@ -1,0 +1,14 @@
+name: build-all_free
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-all_free:
+    uses: ./.github/workflows/build.yaml
+    with:
+      codecs: all_free
