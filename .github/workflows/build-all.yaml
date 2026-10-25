@@ -1,0 +1,14 @@
+name: build-all
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-all:
+    uses: ./.github/workflows/build.yaml
+    with:
+      codecs: all
